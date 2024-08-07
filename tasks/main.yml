@@ -1,0 +1,31 @@
+---
+- name: Persistently set net.ipv4.ip_forward to 1
+  become: true
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    sysctl_set: true
+
+- name: Set iptables FORWARD policy to ACCEPT
+  become: true
+  ansible.builtin.iptables:
+    chain: FORWARD
+    policy: ACCEPT
+
+- name: Add iptables POSTROUTING MASQUERADE rule
+  become: true
+  ansible.builtin.iptables:
+    table: nat
+    chain: POSTROUTING
+    out_interface: "{{ item }}"
+    jump: MASQUERADE
+  with_items: "{{ iptables_out_interfaces }}"
+    
+- name: Save current state of the firewall in system file
+  become: true
+  community.general.iptables_state:
+    ip_version: ip{{ item }}
+    table: filter
+    state: saved
+    path: /etc/iptables/rules.{{ item }}
+  with_items: "{{ iptables_ipversions }}"
