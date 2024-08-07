@@ -25,7 +25,6 @@
   become: true
   community.general.iptables_state:
     ip_version: ip{{ item }}
-    table: filter
     state: saved
     path: /etc/iptables/rules.{{ item }}
   with_items: "{{ iptables_ipversions }}"
