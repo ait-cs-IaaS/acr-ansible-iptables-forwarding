@@ -1,6 +1,7 @@
 ---
 iptables_out_interfaces: 
     - ens3
+    - ens4
 iptables_ipversions:
     - v4
     - v6
